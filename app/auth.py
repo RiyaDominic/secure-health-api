@@ -4,7 +4,7 @@ import jwt
 from functools import wraps
 from flask import request, jsonify, g
 
-os.environ["OIDC_ISSUER"] = "http://localhost:8080/realms/health"
+os.environ.setdefault("OIDC_ISSUER", "http://keycloak:8080/realms/health")
 os.environ["OIDC_AUDIENCE"] = "account"
 
 ISSUER = os.environ.get('OIDC_ISSUER')
