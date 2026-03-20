@@ -377,11 +377,3 @@ This is a **complete, production-ready demonstration** of secure healthcare API 
 -  DevOps ready (Docker + Jenkins + Prometheus)
 
 
-**Ready to demonstrate? Run:**
-```bash
-.\demo_workflow.bat      # Windows
-bash demo_workflow.sh   # Linux/macOS
-```
-
----
-
