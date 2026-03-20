@@ -1,4 +1,4 @@
-# 🔐 Secure Patient Records API
+#  Secure Patient Records API
 
 A production-grade healthcare microservice demonstrating end-to-end security, compliance, and DevOps integration.
 
