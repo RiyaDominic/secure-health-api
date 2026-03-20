@@ -2,7 +2,7 @@
 
 A production-grade healthcare microservice demonstrating end-to-end security, compliance, and DevOps integration.
 
-## Quick Start (30 seconds)
+##  Start 
 
 ```bash
 # Start services
@@ -21,25 +21,25 @@ This runs a fully automated demonstration showing secure IAM, TLS encryption, AE
 
 The Secure Patient Records API is a complete microservice that showcases:
 
-### 🔐 **Security Features**
+###  **Security Features**
 - **Identity & Access Management (IAM)** - OIDC with Keycloak, JWT tokens, RBAC
 - **Transport Layer Security (TLS)** - HTTPS with self-signed certificates
 - **Encryption at Rest** - AES-128 (Fernet) for patient data
 - **Compliance & Audit** - Operation logging, user tracking, consent enforcement
 
-### ✅ **Compliance**
+###  **Compliance**
 - Audit trails for all operations
 - Data minimization (only necessary fields)
 - Consent validation
 - HIPAA-aligned controls
 
-### 🚀 **DevOps Integration**
+###  **DevOps Integration**
 - Docker containerization
 - Jenkins CI/CD pipeline (build → test → deploy)
 - Prometheus metrics & Grafana dashboards
 - Comprehensive unit tests (8 tests for all endpoints)
 
-### 📚 **API Endpoints**
+###  **API Endpoints**
 | Method | Endpoint | Role | Purpose |
 |--------|----------|------|---------|
 | GET | `/records` | viewer, editor | List all patient records |
@@ -161,7 +161,7 @@ curl -k -X POST https://localhost:8443/records \
 # Linux/macOS
 bash demo_workflow.sh
 ```
-**Time:** 5-10 minutes | Shows everything automatically
+** Shows everything automatically
 
 ### Manual Step-by-Step
 ```bash
@@ -171,7 +171,7 @@ bash demo_workflow.sh
 # Linux/macOS
 bash test_manual.sh
 ```
-**Time:** 15 minutes | Detailed curl examples with explanations
+** Detailed curl examples with explanations
 
 ### Unit Tests
 ```bash
@@ -207,11 +207,10 @@ secure-health-api/
 ├── docker-compose.yml               # Service orchestration
 ├── Jenkinsfile                      # CI/CD pipeline
 ├── Postman_Collection.json          # API test suite
-├── demo_workflow.bat/.sh            # Automated demo
+           # Automated demo
 ├── test_manual.ps1/.sh              # Manual testing
 ├── README.md                        # This file
-├── SETUP.md                         # Quick start guide
-└── DEMONSTRATION.md                 # Detailed documentation
+                # Detailed documentation
 ```
 
 ---
@@ -242,7 +241,7 @@ secure-health-api/
 
 ## Security Verification
 
-### ✅ Identity & Access Management
+###  Identity & Access Management
 ```bash
 # Viewer can read
 curl -k https://localhost:8443/records -H "Authorization: Bearer $VIEWER_TOKEN"
@@ -253,7 +252,7 @@ curl -k -X POST https://localhost:8443/records -H "Authorization: Bearer $VIEWER
 # Result: 403 Forbidden
 ```
 
-### ✅ Transport Layer Security (TLS)
+###  Transport Layer Security (TLS)
 ```bash
 # HTTPS endpoint
 curl -k https://localhost:8443/records
@@ -262,7 +261,7 @@ curl -k https://localhost:8443/records
 curl -v https://localhost:8443/records 2>&1 | grep -i SSL
 ```
 
-### ✅ Encryption at Rest
+###  Encryption at Rest
 ```bash
 # Encrypted files are binary
 ls -la data/
@@ -270,14 +269,14 @@ hexdump -C data/*.bin
 # Result: Unreadable binary data
 ```
 
-### ✅ Audit Logging
+###  Audit Logging
 Configuration in `compliance.py` logs all operations:
 - User identity
 - Action type (READ, CREATE)
 - Patient ID
 - Timestamp
 
-### ✅ Unit Tests
+###  Unit Tests
 ```bash
 docker-compose exec app python -m pytest app/tests/test_api.py -v
 # Result: 8 passed
@@ -333,33 +332,10 @@ curl -k https://localhost:8443/records -H "Authorization: Bearer $TOKEN"
 | Certificate errors | Use `-k` flag: `curl -k https://...` |
 | Tests fail | Check imports: `docker-compose exec app python -m pytest -v` |
 
-See [SETUP.md](SETUP.md) for detailed troubleshooting.
+
 
 ---
 
-## Assignment Requirements - Status
-
-| Requirement | Status | Details |
-|-------------|--------|---------|
-| Backend Database | ✅ | File-based with AES encryption |
-| Patient Microservice | ✅ | Flask with 3 endpoints |
-| IAM/RBAC | ✅ | 2 test users, 2 roles |
-| TLS Encryption | ✅ | HTTPS on port 8443 |
-| AES Encryption | ✅ | Fernet cipher, binary storage |
-| Compliance & Audit | ✅ | Operation logging |
-| Jenkins Pipeline | ✅ | Build → Test → Deploy |
-| Unit Tests | ✅ | 8 tests, all passing |
-
----
-
-## Documentation
-
-- **[README.md](README.md)** (this file) - Overview and quick reference
-- **[SETUP.md](SETUP.md)** - Step-by-step setup guide
-- **[DEMONSTRATION.md](DEMONSTRATION.md)** - Complete API documentation
-- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Command reference card
-- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Technical details
-- **[PROJECT_COMPLETION.md](PROJECT_COMPLETION.md)** - Completion summary
 
 ---
 
@@ -384,49 +360,22 @@ See [SETUP.md](SETUP.md) for detailed troubleshooting.
 
 ---
 
-## What You'll Learn
-
-✅ Secure microservice architecture
-✅ JWT and OIDC authentication
-✅ Role-based access control (RBAC)
-✅ TLS/SSL encryption
-✅ AES encryption implementation
-✅ Docker containerization
-✅ CI/CD pipelines
-✅ Prometheus monitoring
-✅ Security testing
-✅ Healthcare compliance patterns
-
 ---
 
 ## Next Steps
 
-1. **Quick Demo:** `.\demo_workflow.bat` (Windows) or `bash demo_workflow.sh` (Linux/macOS)
-2. **Detailed Guide:** Read [SETUP.md](SETUP.md)
-3. **API Reference:** See [DEMONSTRATION.md](DEMONSTRATION.md)
-4. **Manual Testing:** Run `test_manual.ps1` or `test_manual.sh`
-5. **Postman Tests:** Import `Postman_Collection.json`
 
----
 
-## Support
 
-- **Setup Issues:** See [SETUP.md](SETUP.md#troubleshooting)
-- **API Questions:** See [DEMONSTRATION.md](DEMONSTRATION.md)
-- **Quick Lookup:** Use [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
-- **Code Details:** Check code comments and docstrings
-
----
 
 ## Summary
 
 This is a **complete, production-ready demonstration** of secure healthcare API development including:
 
-- 🔐 Multiple layers of security (TLS + AES + RBAC)
-- 📊 Comprehensive testing (8 unit tests + integration tests)
-- 📈 DevOps ready (Docker + Jenkins + Prometheus)
-- 📝 Well documented (2500+ lines across 6 files)
-- 🎯 Real-world patterns (HIPAA-aligned controls)
+-  Multiple layers of security (TLS + AES + RBAC)
+-  Comprehensive testing (8 unit tests + integration tests)
+-  DevOps ready (Docker + Jenkins + Prometheus)
+
 
 **Ready to demonstrate? Run:**
 ```bash
@@ -436,7 +385,3 @@ bash demo_workflow.sh   # Linux/macOS
 
 ---
 
-**Last Updated:** March 2026  
-**Status:** ✅ Complete and Ready  
-**All Tests:** ✅ Passing (8/8)  
-**All Requirements:** ✅ Met
