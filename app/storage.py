@@ -28,3 +28,23 @@ def get_record(pid):
         return json.loads(dec.decode('utf-8'))
     except FileNotFoundError:
         return None
+
+def get_all_records():
+    os.makedirs(DATA_DIR, exist_ok=True)
+    records = []
+    try:
+        for filename in os.listdir(DATA_DIR):
+            if filename.endswith('.bin'):
+                pid = filename.replace('.bin', '')
+                try:
+                    with open(os.path.join(DATA_DIR, filename), 'rb') as f:
+                        enc = f.read()
+                    dec = _cipher().decrypt(enc)
+                    record = json.loads(dec.decode('utf-8'))
+                    records.append(record)
+                except Exception as e:
+                    print(f"Error reading record {pid}: {e}")
+                    continue
+    except FileNotFoundError:
+        pass
+    return records

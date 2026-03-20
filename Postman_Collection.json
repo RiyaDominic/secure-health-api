@@ -1,0 +1,469 @@
+{
+  "info": {
+    "_postman_id": "secure-health-api",
+    "name": "Secure Patient Records API",
+    "description": "End-to-end testing of secure healthcare microservice with IAM, TLS, and AES encryption",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Get Viewer Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set('viewer_token', jsonData.access_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "client_id",
+                  "value": "health-api"
+                },
+                {
+                  "key": "username",
+                  "value": "lab_viewer"
+                },
+                {
+                  "key": "password",
+                  "value": "viewer123"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "password"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8081/realms/health/protocol/openid-connect/token",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["realms", "health", "protocol", "openid-connect", "token"]
+            }
+          }
+        },
+        {
+          "name": "Get Editor Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set('editor_token', jsonData.access_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "client_id",
+                  "value": "health-api"
+                },
+                {
+                  "key": "username",
+                  "value": "lab_editor"
+                },
+                {
+                  "key": "password",
+                  "value": "editor123"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "password"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8081/realms/health/protocol/openid-connect/token",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["realms", "health", "protocol", "openid-connect", "token"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Patient Records - Viewer Tests",
+      "item": [
+        {
+          "name": "Get All Records (Viewer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Viewer can read records', function() {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.response.to.be.json;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{viewer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://localhost:8443/records",
+              "protocol": "https",
+              "host": ["localhost"],
+              "port": "8443",
+              "path": ["records"]
+            }
+          }
+        },
+        {
+          "name": "Try to Create Record (Viewer - Should Fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Viewer cannot create records', function() {",
+                  "  pm.response.to.have.status(403);",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.error).to.equal('forbidden');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{viewer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"patient_id\": \"P-002\", \"name\": \"Jane Smith\", \"age\": 35, \"diagnosis\": \"Diabetes\"}"
+            },
+            "url": {
+              "raw": "https://localhost:8443/records",
+              "protocol": "https",
+              "host": ["localhost"],
+              "port": "8443",
+              "path": ["records"]
+            }
+          }
+        },
+        {
+          "name": "Get Specific Record (Viewer)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{viewer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://localhost:8443/records/P-001",
+              "protocol": "https",
+              "host": ["localhost"],
+              "port": "8443",
+              "path": ["records", "P-001"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Patient Records - Editor Tests",
+      "item": [
+        {
+          "name": "Create Patient Record (Editor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Editor can create records', function() {",
+                  "  pm.response.to.have.status(201);",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.have.property('id');",
+                  "  pm.environment.set('patient_id', jsonData.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{editor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"patient_id\": \"P-001\", \"name\": \"John Doe\", \"age\": 45, \"diagnosis\": \"Hypertension\", \"consent\": true}"
+            },
+            "url": {
+              "raw": "https://localhost:8443/records",
+              "protocol": "https",
+              "host": ["localhost"],
+              "port": "8443",
+              "path": ["records"]
+            }
+          }
+        },
+        {
+          "name": "Create Another Record (Editor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{editor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Jane Smith\", \"age\": 35, \"diagnosis\": \"Diabetes\", \"consent\": true}"
+            },
+            "url": {
+              "raw": "https://localhost:8443/records",
+              "protocol": "https",
+              "host": ["localhost"],
+              "port": "8443",
+              "path": ["records"]
+            }
+          }
+        },
+        {
+          "name": "Get All Records (Editor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Editor can read all records', function() {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.response.to.be.json;",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{editor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://localhost:8443/records",
+              "protocol": "https",
+              "host": ["localhost"],
+              "port": "8443",
+              "path": ["records"]
+            }
+          }
+        },
+        {
+          "name": "Get Specific Record (Editor)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{editor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://localhost:8443/records/P-001",
+              "protocol": "https",
+              "host": ["localhost"],
+              "port": "8443",
+              "path": ["records", "P-001"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Security Verification",
+      "item": [
+        {
+          "name": "Missing Auth Header",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Missing auth header returns 401', function() {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://localhost:8443/records",
+              "protocol": "https",
+              "host": ["localhost"],
+              "port": "8443",
+              "path": ["records"]
+            }
+          }
+        },
+        {
+          "name": "Invalid Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Invalid token returns 401', function() {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid.token.here"
+              }
+            ],
+            "url": {
+              "raw": "https://localhost:8443/records",
+              "protocol": "https",
+              "host": ["localhost"],
+              "port": "8443",
+              "path": ["records"]
+            }
+          }
+        },
+        {
+          "name": "Check TLS Certificate",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://localhost:8443/metrics",
+              "protocol": "https",
+              "host": ["localhost"],
+              "port": "8443",
+              "path": ["metrics"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Monitoring",
+      "item": [
+        {
+          "name": "Get Prometheus Metrics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://localhost:8443/metrics",
+              "protocol": "https",
+              "host": ["localhost"],
+              "port": "8443",
+              "path": ["metrics"]
+            }
+          }
+        },
+        {
+          "name": "Query Prometheus API Request Count",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:9090/api/v1/query?query=api_requests_total",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "9090",
+              "path": ["api", "v1", "query"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "api_requests_total"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "viewer_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "editor_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "patient_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

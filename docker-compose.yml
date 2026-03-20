@@ -28,7 +28,7 @@ services:
     image: jenkins/jenkins:lts
     user: root
     ports:
-      - "8090:8080"      # ✅ changed from 8081 to 8090
+      - "8081:8080"      
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home

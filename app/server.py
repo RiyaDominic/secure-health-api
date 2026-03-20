@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from auth import verify_jwt, require_roles
 from compliance import audit_log
-from storage import save_record, get_record
+from storage import save_record, get_record, get_all_records
 from prometheus_client import Counter, Histogram, generate_latest
 
 app = Flask(__name__)
@@ -44,6 +44,16 @@ def get_patient(pid):
     status = 200 if data else 404
     REQUEST_COUNT.labels('/records', 'GET', str(status)).inc()
     return (jsonify(data), status) if data else (jsonify({'error': 'not found'}), 404)
+
+@app.route('/records', methods=['GET'])
+@verify_jwt
+@require_roles(['viewer', 'editor'])
+def get_all_patients():
+    with REQ_LATENCY.labels('/records').time():
+        data = get_all_records()
+    audit_log('READ_ALL', 'all')
+    REQUEST_COUNT.labels('/records', 'GET', '200').inc()
+    return jsonify(data), 200
 
 print("before calling POST require_role")
 @app.route('/records', methods=['POST'])
